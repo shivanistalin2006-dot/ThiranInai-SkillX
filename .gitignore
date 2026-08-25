@@ -1,3 +1,13 @@
+# Dependency directories
+node_modules/
+jspm_packages/
+web_modules/
+
+# Production & Build outputs
+dist/
+dist-ssr/
+*.local
+
 # Logs
 logs
 *.log
@@ -7,22 +17,32 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-isolation
+# Environment files
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# Editor directories and files
+# Editor & OS files
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+.DS_Store
+Thumbs.db
+
+# Cache & Temporary files
+.vite/
+.eslintcache
+.stylelintcache
+.cache/
+tmp/
+temp/
