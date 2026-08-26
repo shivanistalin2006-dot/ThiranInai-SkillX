@@ -15,12 +15,20 @@ const SkillXContext = createContext();
 export const SkillXProvider = ({ children }) => {
   // Theme state: dark / light
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('skillx_theme') || 'dark';
+    try {
+      return localStorage.getItem('skillx_theme') || 'dark';
+    } catch (e) {
+      return 'dark';
+    }
   });
 
   // Language state: en / ta / hi
   const [lang, setLang] = useState(() => {
-    return localStorage.getItem('skillx_lang') || 'en';
+    try {
+      return localStorage.getItem('skillx_lang') || 'en';
+    } catch (e) {
+      return 'en';
+    }
   });
 
   // Active main view navigation
@@ -55,12 +63,16 @@ export const SkillXProvider = ({ children }) => {
       root.classList.add('light');
       root.classList.remove('dark');
     }
-    localStorage.setItem('skillx_theme', theme);
+    try {
+      localStorage.setItem('skillx_theme', theme);
+    } catch (e) {}
   }, [theme]);
 
   // Effect: Language persistence
   useEffect(() => {
-    localStorage.setItem('skillx_lang', lang);
+    try {
+      localStorage.setItem('skillx_lang', lang);
+    } catch (e) {}
   }, [lang]);
 
   // Translation helper function
