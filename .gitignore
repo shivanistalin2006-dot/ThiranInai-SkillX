@@ -1,3 +1,7 @@
+# ==========================================
+# THIRANINAI - SKILLX Git Ignore Rules
+# ==========================================
+
 # Dependency directories
 node_modules/
 jspm_packages/
@@ -8,7 +12,7 @@ dist/
 dist-ssr/
 *.local
 
-# Logs
+# Logs & Debugging
 logs
 *.log
 npm-debug.log*
