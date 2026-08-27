@@ -3,6 +3,9 @@
 > **"Your Skills Are Your Currency."**  
 > *Teach. Earn. Learn. Repeat.*
 
+![Build Status](https://img.shields.io/badge/SKILLX-Peer%20Skill%20Exchange-6366f1?style=for-the-badge&logo=react)
+![Platform](https://img.shields.io/badge/THIRANINAI-2026%20Startup-06b6d4?style=for-the-badge)
+
 SKILLX is a peer-to-peer skill exchange platform built for college students, young professionals, creators, and mentors. Instead of traditional expensive courses or static video lectures, SKILLX enables users to teach skills they master, earn platform learning credits (**SkillX Credits**), and spend those credits to learn skills from peers.
 
 ---
@@ -10,7 +13,7 @@ SKILLX is a peer-to-peer skill exchange platform built for college students, you
 ## 🚀 Features
 
 - **2026 Startup Product Identity**: Deep Navy foundation, Warm Off-White surfaces, Electric Violet & Indigo accents, Cyan highlights, subtle glass panels.
-- **Dark Mode & Light Mode**: Seamless theme switcher with persistent local storage.
+- **Theme & Color Customizer**: Dark Navy / Light mode toggle with 5 selectable accent palettes (Electric Violet, Emerald Mint, Cyber Cyan, Sunset Amber, Neon Rose).
 - **Multi-Language Support**: Native translation switcher supporting **English**, **Tamil (தமிழ்)**, and **Hindi (हिन्दी)**.
 - **Hero & Live Match Engine**: Interactive recommendation visual displaying Vaishnavi (Java → UI/UX) ↔ Arun (UI/UX → Java) 97% reciprocal compatibility match.
 - **AI Vector Compatibility Scoring**: Matches peers based on reciprocal skill goals, proficiency levels, spoken languages, trust scores, and availability.
@@ -21,17 +24,6 @@ SKILLX is a peer-to-peer skill exchange platform built for college students, you
 - **6-Step Visual Onboarding Wizard**: Interactive skill chips selector, target levels, spoken languages, availability, and learning preferences.
 - **Community Hub & Leaderboard**: Trending skills pills, peer discussion feed, upvoting, and top mentor leaderboards.
 - **3-Tier Pricing**: FREE (₹0), PREMIUM (₹149/mo), and COLLEGE (₹1–3L/yr).
-
----
-
-## 🛠️ Tech Stack
-
-- **Frontend**: React 18
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS v3
-- **Icons**: Lucide React Icons
-- **State Management**: React Context (`SkillXContext`)
-- **Animations**: Framer Motion & CSS Micro-Interactions
 
 ---
 
