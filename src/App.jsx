@@ -5,6 +5,7 @@ import Footer from './components/layout/Footer';
 import OnboardingModal from './components/modals/OnboardingModal';
 import SwapModal from './components/modals/SwapModal';
 import AddSkillModal from './components/modals/AddSkillModal';
+import ThemeModal from './components/modals/ThemeModal';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -21,7 +22,7 @@ import PricingPage from './pages/PricingPage';
 import SettingsPage from './pages/SettingsPage';
 
 function MainContent() {
-  const { currentView } = useSkillX();
+  const { currentView, isThemeModalOpen, setIsThemeModalOpen } = useSkillX();
 
   const renderView = () => {
     switch (currentView) {
@@ -68,6 +69,7 @@ function MainContent() {
       <OnboardingModal />
       <SwapModal />
       <AddSkillModal />
+      <ThemeModal isOpen={isThemeModalOpen} onClose={() => setIsThemeModalOpen(false)} />
     </div>
   );
 }

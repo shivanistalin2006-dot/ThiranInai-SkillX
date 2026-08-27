@@ -22,6 +22,15 @@ export const SkillXProvider = ({ children }) => {
     }
   });
 
+  // Accent Color state: 'violet' | 'emerald' | 'cyan' | 'amber' | 'rose'
+  const [accentColor, setAccentColor] = useState(() => {
+    try {
+      return localStorage.getItem('skillx_accent') || 'violet';
+    } catch (e) {
+      return 'violet';
+    }
+  });
+
   // Language state: en / ta / hi
   const [lang, setLang] = useState(() => {
     try {
@@ -50,10 +59,11 @@ export const SkillXProvider = ({ children }) => {
   const [selectedPeerForSwap, setSelectedPeerForSwap] = useState(null);
   const [isAddSkillModalOpen, setIsAddSkillModalOpen] = useState(false);
   const [addSkillType, setAddSkillType] = useState('teach'); // 'teach' | 'learn'
+  const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [activeChatPeerId, setActiveChatPeerId] = useState('user-arun');
   const [unreadNotifCount, setUnreadNotifCount] = useState(2);
 
-  // Effect: Theme class toggling on html element
+  // Effect: Theme class & Accent attribute toggling on html element
   useEffect(() => {
     const root = document.documentElement;
     if (theme === 'dark') {
@@ -63,10 +73,13 @@ export const SkillXProvider = ({ children }) => {
       root.classList.add('light');
       root.classList.remove('dark');
     }
+    root.setAttribute('data-accent', accentColor);
+
     try {
       localStorage.setItem('skillx_theme', theme);
+      localStorage.setItem('skillx_accent', accentColor);
     } catch (e) {}
-  }, [theme]);
+  }, [theme, accentColor]);
 
   // Effect: Language persistence
   useEffect(() => {
@@ -279,7 +292,12 @@ export const SkillXProvider = ({ children }) => {
     <SkillXContext.Provider
       value={{
         theme,
+        setTheme,
         toggleTheme,
+        accentColor,
+        setAccentColor,
+        isThemeModalOpen,
+        setIsThemeModalOpen,
         lang,
         setLang,
         t,

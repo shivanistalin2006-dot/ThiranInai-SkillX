@@ -16,7 +16,8 @@ import {
   Users,
   Compass,
   CheckCircle,
-  Cpu
+  Cpu,
+  Palette
 } from 'lucide-react';
 import NotificationCenter from './NotificationCenter';
 
@@ -24,6 +25,8 @@ export default function Navbar() {
   const {
     theme,
     toggleTheme,
+    accentColor,
+    setIsThemeModalOpen,
     lang,
     setLang,
     t,
@@ -135,13 +138,14 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Theme Toggle */}
+          {/* Theme & Palette Customizer Toggle Button */}
           <button
-            onClick={toggleTheme}
-            className="p-2 rounded-xl text-slate-400 dark:text-slate-300 hover:text-white light:text-slate-600 hover:bg-slate-800/50 light:hover:bg-slate-100 transition"
-            title="Toggle Light / Dark Mode"
+            onClick={() => setIsThemeModalOpen(true)}
+            className="p-2 rounded-xl text-slate-400 dark:text-slate-300 hover:text-white light:text-slate-600 hover:bg-slate-800/50 light:hover:bg-slate-100 border border-transparent hover:border-brand-violet/40 transition flex items-center space-x-1.5"
+            title="Theme & Color Customizer"
           >
-            {theme === 'dark' ? <Sun size={18} className="text-amber-400" /> : <Moon size={18} className="text-slate-700" />}
+            <Palette size={18} className="text-brand-violet" />
+            {theme === 'dark' ? <Moon size={14} className="text-slate-400" /> : <Sun size={14} className="text-amber-400" />}
           </button>
 
           {/* Notification Bell */}
@@ -230,16 +234,14 @@ export default function Navbar() {
               </button>
             );
           })}
+
           <div className="pt-3 border-t border-white/10 flex items-center justify-between px-2">
-            <div className="flex items-center space-x-2 text-xs text-slate-400">
-              <Zap size={14} className="text-brand-violet" />
-              <span>Balance: <strong>{currentUser.creditsBalance} SkillX Credits</strong></span>
-            </div>
             <button
-              onClick={() => handleNavClick('dashboard')}
-              className="text-xs font-bold text-brand-violet hover:underline"
+              onClick={() => { setIsThemeModalOpen(true); setIsMobileMenuOpen(false); }}
+              className="text-xs font-bold text-brand-violet flex items-center space-x-1.5"
             >
-              Go to Dashboard &rarr;
+              <Palette size={16} />
+              <span>Theme Customizer & Palette</span>
             </button>
           </div>
         </div>
