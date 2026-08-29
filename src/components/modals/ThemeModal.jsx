@@ -1,28 +1,65 @@
 import React from 'react';
 import { useSkillX } from '../../context/SkillXContext';
-import { X, Sun, Moon, Palette, Check, Sparkles, Monitor } from 'lucide-react';
+import { X, Sun, Moon, Palette, Check, Sparkles, Crown, Heart, Star } from 'lucide-react';
 
 export default function ThemeModal({ isOpen, onClose }) {
-  const { theme, toggleTheme, setTheme, accentColor, setAccentColor } = useSkillX();
+  const {
+    themePreset,
+    setThemePreset,
+    theme,
+    setTheme,
+    accentColor,
+    setAccentColor
+  } = useSkillX();
 
   if (!isOpen) return null;
 
-  const colorPalettes = [
-    { id: 'violet', name: 'Electric Violet', hex: '#6366f1', gradient: 'from-indigo-600 to-violet-500' },
-    { id: 'emerald', name: 'Emerald Mint', hex: '#10b981', gradient: 'from-emerald-600 to-teal-400' },
-    { id: 'cyan', name: 'Cyber Cyan', hex: '#06b6d4', gradient: 'from-cyan-500 to-blue-500' },
-    { id: 'amber', name: 'Sunset Amber', hex: '#f59e0b', gradient: 'from-amber-500 to-orange-500' },
-    { id: 'rose', name: 'Neon Rose', hex: '#f43f5e', gradient: 'from-rose-500 to-pink-500' },
+  const specialThemes = [
+    {
+      id: 'black-gold',
+      name: 'Black & Gold 👑',
+      tagline: 'Luxury Obsidian & Metallic Gold',
+      icon: Crown,
+      badge: 'PREMIUM LUXURY',
+      bgClass: 'bg-black text-amber-300 border-amber-500/50',
+      previewGradient: 'from-amber-500 to-yellow-600'
+    },
+    {
+      id: 'pastel-mixture',
+      name: 'Pastel Mixture 🎨',
+      tagline: 'Soft Lilac, Mint & Peach Mixture',
+      icon: Heart,
+      badge: 'AESTHETIC SOFT',
+      bgClass: 'bg-purple-100 text-purple-900 border-purple-300',
+      previewGradient: 'from-purple-400 via-pink-300 to-emerald-300'
+    },
+    {
+      id: 'white-gold',
+      name: 'White & Gold ✨',
+      tagline: 'Royal White & Warm Gold Foil',
+      icon: Star,
+      badge: 'ROYAL ELEGANCE',
+      bgClass: 'bg-amber-50/50 text-amber-900 border-amber-300',
+      previewGradient: 'from-amber-400 to-yellow-500'
+    }
   ];
 
-  const modes = [
-    { id: 'dark', name: 'Dark Navy', icon: Moon, desc: 'Deep startup navy background' },
-    { id: 'light', name: 'Light Clean', icon: Sun, desc: 'Warm off-white background' },
+  const standardModes = [
+    { id: 'dark', name: 'Dark Navy', icon: Moon, desc: 'Deep 2026 startup navy background' },
+    { id: 'light', name: 'Light Clean', icon: Sun, desc: 'Warm off-white clean background' },
+  ];
+
+  const colorPalettes = [
+    { id: 'violet', name: 'Electric Violet', hex: '#6366f1' },
+    { id: 'emerald', name: 'Emerald Mint', hex: '#10b981' },
+    { id: 'cyan', name: 'Cyber Cyan', hex: '#06b6d4' },
+    { id: 'amber', name: 'Sunset Amber', hex: '#f59e0b' },
+    { id: 'rose', name: 'Neon Rose', hex: '#f43f5e' },
   ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-lg rounded-3xl bg-brand-surface dark:bg-brand-surface light:bg-white border border-brand-border dark:border-white/10 light:border-slate-200 shadow-2xl overflow-hidden p-6 sm:p-8">
+      <div className="relative w-full max-w-xl rounded-3xl bg-brand-surface dark:bg-brand-surface light:bg-white border border-brand-border dark:border-white/10 light:border-slate-200 shadow-2xl overflow-hidden p-6 sm:p-8">
         
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-white/10">
@@ -43,32 +80,86 @@ export default function ThemeModal({ isOpen, onClose }) {
           </button>
         </div>
 
-        <div className="space-y-6 pt-6">
+        <div className="space-y-6 pt-6 max-h-[75vh] overflow-y-auto pr-1">
           
-          {/* Mode Selector */}
+          {/* SPECIAL 3 FEATURED THEMES */}
           <div className="space-y-3">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Appearance Mode</label>
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-1.5">
+                <Crown size={14} />
+                <span>Featured Custom Themes</span>
+              </label>
+              <span className="text-[10px] font-bold text-brand-cyan uppercase">3 Special Presets</span>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3">
+              {specialThemes.map((st) => {
+                const Icon = st.icon;
+                const active = themePreset === st.id;
+                return (
+                  <button
+                    key={st.id}
+                    onClick={() => setThemePreset(st.id)}
+                    className={`p-4 rounded-2xl border text-left transition flex items-center justify-between relative overflow-hidden ${
+                      active
+                        ? 'border-amber-400 ring-2 ring-amber-400/50 bg-amber-500/10 text-white font-bold shadow-xl'
+                        : 'border-white/10 bg-slate-900/60 light:bg-slate-100 hover:border-white/20'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3.5 z-10">
+                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${st.previewGradient} text-white flex items-center justify-center font-bold shadow-md`}>
+                        <Icon size={20} />
+                      </div>
+                      <div>
+                        <div className="text-sm font-extrabold text-slate-900 dark:text-white flex items-center space-x-2">
+                          <span>{st.name}</span>
+                          <span className="text-[9px] px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-400 font-bold uppercase border border-amber-400/30">
+                            {st.badge}
+                          </span>
+                        </div>
+                        <div className="text-xs text-slate-400 mt-0.5">{st.tagline}</div>
+                      </div>
+                    </div>
+
+                    <div className="z-10">
+                      {active ? (
+                        <span className="p-1.5 rounded-full bg-amber-400 text-slate-950 font-bold block">
+                          <Check size={16} />
+                        </span>
+                      ) : (
+                        <span className="text-xs font-bold text-slate-400 hover:text-white">Apply</span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* STANDARD MODES */}
+          <div className="space-y-3 pt-2 border-t border-white/10">
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Standard Modes</label>
             <div className="grid grid-cols-2 gap-3">
-              {modes.map((m) => {
+              {standardModes.map((m) => {
                 const Icon = m.icon;
-                const active = theme === m.id;
+                const active = themePreset === m.id;
                 return (
                   <button
                     key={m.id}
-                    onClick={() => setTheme(m.id)}
-                    className={`p-4 rounded-2xl border text-left transition flex items-center space-x-3 ${
+                    onClick={() => setThemePreset(m.id)}
+                    className={`p-3.5 rounded-2xl border text-left transition flex items-center space-x-3 ${
                       active
                         ? 'border-brand-violet bg-brand-violet/15 text-white font-bold shadow-lg'
                         : 'border-white/10 bg-slate-900/60 light:bg-slate-100 text-slate-300 hover:border-white/20'
                     }`}
                   >
-                    <div className={`p-2.5 rounded-xl ${active ? 'bg-brand-violet text-white' : 'bg-slate-800 text-slate-400'}`}>
-                      <Icon size={18} />
+                    <div className={`p-2 rounded-xl ${active ? 'bg-brand-violet text-white' : 'bg-slate-800 text-slate-400'}`}>
+                      <Icon size={16} />
                     </div>
                     <div>
                       <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center space-x-1">
                         <span>{m.name}</span>
-                        {active && <Check size={14} className="text-brand-violet" />}
+                        {active && <Check size={12} className="text-brand-violet" />}
                       </div>
                       <div className="text-[10px] text-slate-400 mt-0.5">{m.desc}</div>
                     </div>
@@ -78,54 +169,41 @@ export default function ThemeModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          {/* Accent Color Palette */}
-          <div className="space-y-3">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Accent Color Theme</label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          {/* Accent Colors (for Standard Modes) */}
+          <div className="space-y-3 pt-2 border-t border-white/10">
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Accent Color</label>
+            <div className="grid grid-cols-5 gap-2">
               {colorPalettes.map((cp) => {
                 const active = accentColor === cp.id;
                 return (
                   <button
                     key={cp.id}
                     onClick={() => setAccentColor(cp.id)}
-                    className={`p-3 rounded-xl border text-left transition flex items-center justify-between ${
+                    className={`p-2.5 rounded-xl border text-center transition flex flex-col items-center space-y-1 ${
                       active
                         ? 'border-brand-violet bg-brand-violet/20 text-white font-bold'
-                        : 'border-white/10 bg-slate-900/60 light:bg-slate-100 text-slate-300 hover:bg-slate-800'
+                        : 'border-white/10 bg-slate-900/60 light:bg-slate-100 hover:bg-slate-800'
                     }`}
                   >
-                    <div className="flex items-center space-x-2.5">
-                      <span
-                        className="w-5 h-5 rounded-full shadow-inner border border-white/20"
-                        style={{ backgroundColor: cp.hex }}
-                      />
-                      <span className="text-xs font-semibold text-slate-900 dark:text-white">{cp.name}</span>
-                    </div>
-                    {active && <Check size={16} className="text-brand-violet" />}
+                    <span
+                      className="w-5 h-5 rounded-full shadow-inner border border-white/20"
+                      style={{ backgroundColor: cp.hex }}
+                    />
+                    <span className="text-[10px] text-slate-400 font-semibold">{cp.name.split(' ')[0]}</span>
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Live Preview Box */}
-          <div className="p-4 rounded-2xl bg-slate-900/80 light:bg-slate-100 border border-white/10 space-y-2">
-            <span className="text-[10px] font-bold text-slate-400 uppercase">LIVE THEME PREVIEW</span>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-300">Active Theme:</span>
-              <span className="font-bold text-brand-violet uppercase">{theme} MODE · {accentColor} PALETTE</span>
-            </div>
-            <div className="h-2 rounded-full bg-gradient-to-r from-brand-violet to-brand-cyan mt-1" />
-          </div>
-
           {/* Submit */}
-          <div>
+          <div className="pt-2">
             <button
               onClick={onClose}
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-brand-violet to-brand-cyan text-white text-xs font-black shadow-xl hover:opacity-95 transition flex items-center justify-center space-x-2"
+              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-brand-violet via-brand-indigo to-brand-cyan text-white text-xs font-black shadow-xl hover:opacity-95 transition flex items-center justify-center space-x-2"
             >
               <Sparkles size={16} />
-              <span>Apply & Save Theme</span>
+              <span>Apply & Save Theme Settings</span>
             </button>
           </div>
 

@@ -64,3 +64,169 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(99, 102, 241, 0.7);
 }
+
+/* ==========================================
+   CUSTOM THEMES: 
+   1. BLACK & GOLD
+   2. PASTEL MIXTURE
+   3. WHITE & GOLD
+========================================== */
+
+/* 1. BLACK & GOLD THEME */
+html.theme-black-gold,
+.theme-black-gold body {
+  background-color: #070709 !important;
+  color: #fef08a !important;
+}
+
+.theme-black-gold .bg-brand-dark {
+  background-color: #070709 !important;
+}
+
+.theme-black-gold .glass-panel,
+.theme-black-gold .glass-card {
+  background: rgba(18, 18, 22, 0.9) !important;
+  border-color: rgba(234, 179, 8, 0.3) !important;
+  box-shadow: 0 0 30px -5px rgba(234, 179, 8, 0.15) !important;
+}
+
+.theme-black-gold .bg-brand-surface {
+  background-color: #121216 !important;
+}
+
+.theme-black-gold .text-white,
+.theme-black-gold .text-slate-100,
+.theme-black-gold .text-slate-200 {
+  color: #ffffff !important;
+}
+
+.theme-black-gold .text-slate-300,
+.theme-black-gold .text-slate-400 {
+  color: #fef08a !important;
+}
+
+.theme-black-gold .bg-brand-violet,
+.theme-black-gold .bg-brand-indigo {
+  background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%) !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+}
+
+.theme-black-gold .text-brand-violet,
+.theme-black-gold .text-brand-cyan {
+  color: #fbbf24 !important;
+}
+
+.theme-black-gold .border-brand-violet,
+.theme-black-gold .border-brand-border,
+.theme-black-gold .border-white\/10 {
+  border-color: rgba(234, 179, 8, 0.3) !important;
+}
+
+
+/* 2. PASTEL MIXTURE THEME */
+html.theme-pastel-mixture,
+.theme-pastel-mixture body {
+  background: linear-gradient(135deg, #fdf4ff 0%, #f0fdf4 50%, #eff6ff 100%) !important;
+  color: #1e1b4b !important;
+}
+
+.theme-pastel-mixture .bg-brand-dark {
+  background: transparent !important;
+}
+
+.theme-pastel-mixture .glass-panel,
+.theme-pastel-mixture .glass-card {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border-color: rgba(192, 132, 252, 0.35) !important;
+  backdrop-filter: blur(16px) !important;
+  box-shadow: 0 10px 30px -10px rgba(192, 132, 252, 0.25) !important;
+}
+
+.theme-pastel-mixture .bg-brand-surface {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.theme-pastel-mixture .text-white,
+.theme-pastel-mixture .text-slate-100,
+.theme-pastel-mixture .text-slate-200,
+.theme-pastel-mixture .text-slate-300 {
+  color: #2e1065 !important;
+}
+
+.theme-pastel-mixture .text-slate-400 {
+  color: #7e22ce !important;
+}
+
+.theme-pastel-mixture .bg-brand-violet {
+  background: linear-gradient(135deg, #c084fc 0%, #f472b6 100%) !important;
+  color: #ffffff !important;
+}
+
+.theme-pastel-mixture .bg-brand-cyan {
+  background: linear-gradient(135deg, #34d399 0%, #38bdf8 100%) !important;
+  color: #0f172a !important;
+}
+
+.theme-pastel-mixture .text-brand-violet {
+  color: #9333ea !important;
+}
+
+.theme-pastel-mixture .text-brand-cyan {
+  color: #059669 !important;
+}
+
+.theme-pastel-mixture .border-white\/10,
+.theme-pastel-mixture .border-brand-border {
+  border-color: rgba(192, 132, 252, 0.3) !important;
+}
+
+
+/* 3. WHITE & GOLD THEME */
+html.theme-white-gold,
+.theme-white-gold body {
+  background-color: #fefdfa !important;
+  color: #1c1917 !important;
+}
+
+.theme-white-gold .bg-brand-dark {
+  background-color: #fefdfa !important;
+}
+
+.theme-white-gold .glass-panel,
+.theme-white-gold .glass-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(217, 119, 6, 0.35) !important;
+  box-shadow: 0 10px 30px -10px rgba(217, 119, 6, 0.15) !important;
+}
+
+.theme-white-gold .bg-brand-surface {
+  background-color: #ffffff !important;
+}
+
+.theme-white-gold .text-white,
+.theme-white-gold .text-slate-100,
+.theme-white-gold .text-slate-200,
+.theme-white-gold .text-slate-300 {
+  color: #1c1917 !important;
+}
+
+.theme-white-gold .text-slate-400 {
+  color: #78350f !important;
+}
+
+.theme-white-gold .bg-brand-violet,
+.theme-white-gold .bg-brand-indigo {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+  color: #ffffff !important;
+}
+
+.theme-white-gold .text-brand-violet,
+.theme-white-gold .text-brand-cyan {
+  color: #b45309 !important;
+}
+
+.theme-white-gold .border-white\/10,
+.theme-white-gold .border-brand-border {
+  border-color: rgba(217, 119, 6, 0.3) !important;
+}

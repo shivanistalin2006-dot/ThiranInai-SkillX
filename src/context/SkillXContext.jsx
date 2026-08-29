@@ -13,7 +13,16 @@ import {
 const SkillXContext = createContext();
 
 export const SkillXProvider = ({ children }) => {
-  // Theme state: dark / light
+  // Preset Theme state: 'black-gold' | 'pastel-mixture' | 'white-gold' | 'dark' | 'light'
+  const [themePreset, setThemePreset] = useState(() => {
+    try {
+      return localStorage.getItem('skillx_theme_preset') || 'dark';
+    } catch (e) {
+      return 'dark';
+    }
+  });
+
+  // Base Theme mode state: dark / light
   const [theme, setTheme] = useState(() => {
     try {
       return localStorage.getItem('skillx_theme') || 'dark';
@@ -63,23 +72,38 @@ export const SkillXProvider = ({ children }) => {
   const [activeChatPeerId, setActiveChatPeerId] = useState('user-arun');
   const [unreadNotifCount, setUnreadNotifCount] = useState(2);
 
-  // Effect: Theme class & Accent attribute toggling on html element
+  // Effect: Apply theme preset classes on documentElement
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-      root.classList.remove('light');
-    } else {
+    
+    // Reset all theme classes first
+    root.classList.remove('dark', 'light', 'theme-black-gold', 'theme-pastel-mixture', 'theme-white-gold');
+
+    if (themePreset === 'black-gold') {
+      root.classList.add('dark', 'theme-black-gold');
+      setTheme('dark');
+    } else if (themePreset === 'pastel-mixture') {
+      root.classList.add('light', 'theme-pastel-mixture');
+      setTheme('light');
+    } else if (themePreset === 'white-gold') {
+      root.classList.add('light', 'theme-white-gold');
+      setTheme('light');
+    } else if (themePreset === 'light') {
       root.classList.add('light');
-      root.classList.remove('dark');
+      setTheme('light');
+    } else {
+      root.classList.add('dark');
+      setTheme('dark');
     }
+
     root.setAttribute('data-accent', accentColor);
 
     try {
+      localStorage.setItem('skillx_theme_preset', themePreset);
       localStorage.setItem('skillx_theme', theme);
       localStorage.setItem('skillx_accent', accentColor);
     } catch (e) {}
-  }, [theme, accentColor]);
+  }, [themePreset, theme, accentColor]);
 
   // Effect: Language persistence
   useEffect(() => {
@@ -97,7 +121,7 @@ export const SkillXProvider = ({ children }) => {
   };
 
   const toggleTheme = () => {
-    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+    setThemePreset(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
 
   // AI Matching Compatibility Score Engine
@@ -291,6 +315,8 @@ export const SkillXProvider = ({ children }) => {
   return (
     <SkillXContext.Provider
       value={{
+        themePreset,
+        setThemePreset,
         theme,
         setTheme,
         toggleTheme,
