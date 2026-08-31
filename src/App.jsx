@@ -6,6 +6,7 @@ import OnboardingModal from './components/modals/OnboardingModal';
 import SwapModal from './components/modals/SwapModal';
 import AddSkillModal from './components/modals/AddSkillModal';
 import ThemeModal from './components/modals/ThemeModal';
+import AuthModal from './components/modals/AuthModal';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -20,9 +21,10 @@ import MessagingPage from './pages/MessagingPage';
 import CommunityPage from './pages/CommunityPage';
 import PricingPage from './pages/PricingPage';
 import SettingsPage from './pages/SettingsPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
 
 function MainContent() {
-  const { currentView, isThemeModalOpen, setIsThemeModalOpen } = useSkillX();
+  const { currentView, isThemeModalOpen, setIsThemeModalOpen, isAuthModalOpen, setIsAuthModalOpen } = useSkillX();
 
   const renderView = () => {
     switch (currentView) {
@@ -50,6 +52,8 @@ function MainContent() {
         return <PricingPage />;
       case 'settings':
         return <SettingsPage />;
+      case 'admin':
+        return <AdminDashboardPage />;
       default:
         return <LandingPage />;
     }
@@ -70,6 +74,7 @@ function MainContent() {
       <SwapModal />
       <AddSkillModal />
       <ThemeModal isOpen={isThemeModalOpen} onClose={() => setIsThemeModalOpen(false)} />
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </div>
   );
 }

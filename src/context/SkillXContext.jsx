@@ -50,10 +50,38 @@ export const SkillXProvider = ({ children }) => {
   });
 
   // Active main view navigation
-  const [currentView, setCurrentView] = useState('landing'); // 'landing', 'discover', 'aimatch', 'passport', 'credits', 'dashboard', 'myskills', 'swaps', 'messaging', 'community', 'pricing', 'settings'
+  const [currentView, setCurrentView] = useState('landing'); // 'landing', 'discover', 'aimatch', 'passport', 'credits', 'dashboard', 'myskills', 'swaps', 'messaging', 'community', 'pricing', 'settings', 'admin'
 
-  // User & Domain State
-  const [currentUser, setCurrentUser] = useState(initialCurrentUser);
+  // User & Authentication State
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('skillx_auth_user');
+      return saved ? JSON.parse(saved) : initialCurrentUser;
+    } catch (e) {
+      return initialCurrentUser;
+    }
+  });
+
+  const [authRole, setAuthRole] = useState(() => {
+    try {
+      return localStorage.getItem('skillx_auth_role') || 'user'; // 'user' | 'admin'
+    } catch (e) {
+      return 'user';
+    }
+  });
+
+  const [registeredUsers, setRegisteredUsers] = useState(() => {
+    try {
+      const saved = localStorage.getItem('skillx_registered_users');
+      return saved ? JSON.parse(saved) : [
+        { email: 'vaishnavi@ceg.edu', password: 'user123', name: 'Vaishnavi R.', role: 'User', authRole: 'user' },
+        { email: 'admin@thiraninai.edu', password: 'admin123', name: 'Campus Admin', role: 'Admin', authRole: 'admin' }
+      ];
+    } catch (e) {
+      return [];
+    }
+  });
+
   const [peers, setPeers] = useState(mockUsers);
   const [swaps, setSwaps] = useState(initialSwaps);
   const [transactions, setTransactions] = useState(initialTransactions);
@@ -62,6 +90,7 @@ export const SkillXProvider = ({ children }) => {
   const [communityPosts, setCommunityPosts] = useState(initialCommunityPosts);
 
   // Modals & Active Selections
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(1);
   const [isSwapModalOpen, setIsSwapModalOpen] = useState(false);
@@ -105,6 +134,15 @@ export const SkillXProvider = ({ children }) => {
     } catch (e) {}
   }, [themePreset, theme, accentColor]);
 
+  // Effect: Persist Authentication
+  useEffect(() => {
+    try {
+      localStorage.setItem('skillx_auth_user', JSON.stringify(currentUser));
+      localStorage.setItem('skillx_auth_role', authRole);
+      localStorage.setItem('skillx_registered_users', JSON.stringify(registeredUsers));
+    } catch (e) {}
+  }, [currentUser, authRole, registeredUsers]);
+
   // Effect: Language persistence
   useEffect(() => {
     try {
@@ -124,13 +162,93 @@ export const SkillXProvider = ({ children }) => {
     setThemePreset(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
 
+  // Auth Functions
+  const loginUser = (email, password, role) => {
+    const found = registeredUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+    const targetRole = role || (found ? found.authRole : 'user');
+
+    if (found && found.password !== password) {
+      return { success: false, message: 'Incorrect password' };
+    }
+
+    let loggedUser = {
+      ...initialCurrentUser,
+      name: found ? found.name : email.split('@')[0],
+      email: email,
+      role: targetRole === 'admin' ? 'Campus Administrator' : 'Computer Science Student',
+      trustScore: targetRole === 'admin' ? 99 : 94,
+      creditsBalance: targetRole === 'admin' ? 5000 : 1240
+    };
+
+    setCurrentUser(loggedUser);
+    setAuthRole(targetRole);
+
+    if (targetRole === 'admin') {
+      setCurrentView('admin');
+    } else {
+      setCurrentView('dashboard');
+    }
+
+    return { success: true };
+  };
+
+  const registerUser = (userData) => {
+    const newUserRecord = {
+      email: userData.email,
+      password: userData.password,
+      name: userData.name,
+      role: userData.role || 'User',
+      authRole: userData.authRole || 'user',
+      institution: userData.institution || 'College of Engineering'
+    };
+
+    setRegisteredUsers(prev => [...prev, newUserRecord]);
+
+    const loggedUser = {
+      ...initialCurrentUser,
+      id: `user-${Date.now()}`,
+      name: userData.name,
+      email: userData.email,
+      role: userData.authRole === 'admin' ? 'Campus Administrator' : 'Skill Exchange Student',
+      institution: userData.institution || 'College of Engineering',
+      trustScore: userData.authRole === 'admin' ? 99 : 85,
+      creditsBalance: userData.authRole === 'admin' ? 5000 : 500,
+      skillsTeach: userData.authRole === 'admin' ? [] : [
+        { id: `st-${Date.now()}`, name: 'General Mentorship', category: 'Academics', level: 'Intermediate', verified: true, hoursTaught: 0 }
+      ],
+      skillsLearn: userData.authRole === 'admin' ? [] : [
+        { id: `sl-${Date.now()}`, name: 'UI/UX Design', category: 'Design', level: 'Beginner', targetLevel: 'Intermediate', progress: 10 }
+      ]
+    };
+
+    setCurrentUser(loggedUser);
+    setAuthRole(userData.authRole || 'user');
+
+    return { success: true };
+  };
+
+  const logoutUser = () => {
+    setCurrentUser(initialCurrentUser);
+    setAuthRole('user');
+    setCurrentView('landing');
+  };
+
+  const switchRole = (newRole) => {
+    setAuthRole(newRole);
+    if (newRole === 'admin') {
+      setCurrentView('admin');
+    } else {
+      setCurrentView('dashboard');
+    }
+  };
+
   // AI Matching Compatibility Score Engine
   const calculateMatchScore = (peer) => {
     if (!peer) return 0;
     
     let score = 60; // Base score
     
-    // 1. Reciprocal Skill Match (Check if peer teaches what user wants & user teaches what peer wants)
+    // 1. Reciprocal Skill Match
     const userWants = currentUser.skillsLearn.map(s => s.name.toLowerCase());
     const peerTeaches = peer.skillsTeach.map(s => s.name.toLowerCase());
     const userTeaches = currentUser.skillsTeach.map(s => s.name.toLowerCase());
@@ -324,6 +442,14 @@ export const SkillXProvider = ({ children }) => {
         setAccentColor,
         isThemeModalOpen,
         setIsThemeModalOpen,
+        isAuthModalOpen,
+        setIsAuthModalOpen,
+        authRole,
+        setAuthRole,
+        loginUser,
+        registerUser,
+        logoutUser,
+        switchRole,
         lang,
         setLang,
         t,

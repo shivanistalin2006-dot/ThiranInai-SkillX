@@ -17,7 +17,10 @@ import {
   Compass,
   CheckCircle,
   Cpu,
-  Palette
+  Palette,
+  Crown,
+  ShieldCheck,
+  LogOut
 } from 'lucide-react';
 import NotificationCenter from './NotificationCenter';
 
@@ -27,6 +30,10 @@ export default function Navbar() {
     toggleTheme,
     accentColor,
     setIsThemeModalOpen,
+    setIsAuthModalOpen,
+    authRole,
+    switchRole,
+    logoutUser,
     lang,
     setLang,
     t,
@@ -41,7 +48,7 @@ export default function Navbar() {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
 
-  const navItems = [
+  const baseNavItems = [
     { id: 'discover', label: t('nav_discover'), icon: Compass },
     { id: 'aimatch', label: t('nav_ai_match'), icon: Cpu },
     { id: 'passport', label: t('nav_passport'), icon: User },
@@ -49,6 +56,10 @@ export default function Navbar() {
     { id: 'community', label: t('nav_community'), icon: Users },
     { id: 'pricing', label: t('nav_pricing'), icon: CreditCard }
   ];
+
+  const navItems = authRole === 'admin'
+    ? [{ id: 'admin', label: 'Admin Portal', icon: Crown }, ...baseNavItems]
+    : baseNavItems;
 
   const handleNavClick = (viewId) => {
     setCurrentView(viewId);
@@ -80,14 +91,15 @@ export default function Navbar() {
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentView === item.id;
+            const isAdminBadge = item.id === 'admin';
             return (
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
                 className={`px-3.5 py-2 rounded-full text-xs font-semibold flex items-center space-x-1.5 transition-all duration-200 ${
                   isActive
-                    ? 'bg-brand-violet text-white shadow-md shadow-brand-violet/30 font-bold'
-                    : 'text-slate-400 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white light:text-slate-600 hover:bg-white/10 light:hover:bg-white'
+                    ? isAdminBadge ? 'bg-amber-500 text-slate-950 font-black shadow-md' : 'bg-brand-violet text-white shadow-md font-bold'
+                    : isAdminBadge ? 'text-amber-400 font-bold hover:bg-amber-500/10' : 'text-slate-400 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white light:text-slate-600 hover:bg-white/10 light:hover:bg-white'
                 }`}
               >
                 <Icon size={14} />
@@ -98,8 +110,22 @@ export default function Navbar() {
         </nav>
 
         {/* Right: Controls & Actions */}
-        <div className="flex items-center space-x-2.5">
+        <div className="flex items-center space-x-2">
           
+          {/* Role Switcher Pill */}
+          <button
+            onClick={() => switchRole(authRole === 'admin' ? 'user' : 'admin')}
+            className={`hidden sm:flex items-center space-x-1 px-2.5 py-1 rounded-full text-[10px] font-bold border transition ${
+              authRole === 'admin'
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
+                : 'bg-brand-violet/20 text-brand-violet border-brand-violet/40 hover:bg-brand-violet/30'
+            }`}
+            title="Switch User / Admin View"
+          >
+            {authRole === 'admin' ? <Crown size={12} /> : <User size={12} />}
+            <span>Role: {authRole === 'admin' ? 'Admin' : 'User'}</span>
+          </button>
+
           {/* Language Switcher */}
           <div className="relative">
             <button
@@ -138,14 +164,13 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Theme & Palette Customizer Toggle Button */}
+          {/* Theme & Palette Customizer Button */}
           <button
             onClick={() => setIsThemeModalOpen(true)}
-            className="p-2 rounded-xl text-slate-400 dark:text-slate-300 hover:text-white light:text-slate-600 hover:bg-slate-800/50 light:hover:bg-slate-100 border border-transparent hover:border-brand-violet/40 transition flex items-center space-x-1.5"
+            className="p-2 rounded-xl text-slate-400 dark:text-slate-300 hover:text-white light:text-slate-600 hover:bg-slate-800/50 light:hover:bg-slate-100 border border-transparent hover:border-brand-violet/40 transition flex items-center space-x-1"
             title="Theme & Color Customizer"
           >
             <Palette size={18} className="text-brand-violet" />
-            {theme === 'dark' ? <Moon size={14} className="text-slate-400" /> : <Sun size={14} className="text-amber-400" />}
           </button>
 
           {/* Notification Bell */}
@@ -157,9 +182,6 @@ export default function Navbar() {
             >
               <Bell size={18} />
               {unreadNotifCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-cyan animate-ping" />
-              )}
-              {unreadNotifCount > 0 && (
                 <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-brand-cyan" />
               )}
             </button>
@@ -167,40 +189,29 @@ export default function Navbar() {
             {isNotifOpen && <NotificationCenter onClose={() => setIsNotifOpen(false)} />}
           </div>
 
-          {/* User Credits Quick Counter */}
+          {/* User Credits Counter */}
           <button
             onClick={() => handleNavClick('credits')}
             className="hidden md:flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-brand-violet/10 border border-brand-violet/30 text-brand-violet hover:bg-brand-violet/20 transition text-xs font-bold"
           >
             <Zap size={14} className="fill-brand-violet text-brand-violet" />
             <span>{currentUser.creditsBalance}</span>
-            <span className="text-[10px] text-slate-400 uppercase font-semibold">SKILLX</span>
           </button>
 
-          {/* Primary User Dashboard / Join CTAs */}
-          {currentView !== 'landing' ? (
-            <button
-              onClick={() => handleNavClick('dashboard')}
-              className="hidden sm:flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-brand-surface dark:bg-brand-surface light:bg-slate-200 border border-brand-border dark:border-white/10 hover:border-brand-violet transition text-xs font-semibold"
-            >
-              <img src={currentUser.avatar} alt={currentUser.name} className="w-5 h-5 rounded-full object-cover" />
-              <span className="text-slate-200 dark:text-slate-200 light:text-slate-800">{currentUser.name.split(' ')[0]}</span>
-            </button>
-          ) : (
-            <button
-              onClick={() => handleNavClick('dashboard')}
-              className="hidden sm:block text-xs font-bold text-slate-300 hover:text-white px-3 py-2 transition"
-            >
-              {t('nav_login')}
-            </button>
-          )}
+          {/* Log In & Register Auth Buttons */}
+          <button
+            onClick={() => setIsAuthModalOpen(true)}
+            className="text-xs font-bold text-slate-300 hover:text-white px-2.5 py-1.5 transition"
+          >
+            Log In
+          </button>
 
           <button
-            onClick={() => setIsOnboardingOpen(true)}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-brand-violet to-brand-indigo hover:from-brand-violet-hover hover:to-brand-violet text-white text-xs font-bold shadow-lg shadow-brand-violet/25 hover:shadow-brand-violet/40 transition transform active:scale-95 flex items-center space-x-1.5"
+            onClick={() => setIsAuthModalOpen(true)}
+            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-brand-violet to-brand-cyan hover:opacity-95 text-white text-xs font-bold shadow-md transition flex items-center space-x-1"
           >
             <Sparkles size={14} />
-            <span>{t('nav_join')}</span>
+            <span>Register</span>
           </button>
 
           {/* Mobile Hamburger Toggle */}
@@ -237,11 +248,11 @@ export default function Navbar() {
 
           <div className="pt-3 border-t border-white/10 flex items-center justify-between px-2">
             <button
-              onClick={() => { setIsThemeModalOpen(true); setIsMobileMenuOpen(false); }}
-              className="text-xs font-bold text-brand-violet flex items-center space-x-1.5"
+              onClick={() => { setIsAuthModalOpen(true); setIsMobileMenuOpen(false); }}
+              className="text-xs font-bold text-brand-cyan flex items-center space-x-1.5"
             >
-              <Palette size={16} />
-              <span>Theme Customizer & Palette</span>
+              <User size={16} />
+              <span>Log In / Register Account</span>
             </button>
           </div>
         </div>
