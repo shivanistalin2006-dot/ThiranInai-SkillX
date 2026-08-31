@@ -25,7 +25,8 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['"Times New Roman"', 'Times', 'Georgia', 'serif'],
+        serif: ['"Times New Roman"', 'Times', 'Georgia', 'serif'],
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
