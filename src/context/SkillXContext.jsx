@@ -91,6 +91,9 @@ export const SkillXProvider = ({ children }) => {
 
   // Modals & Active Selections
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [initialAuthRole, setInitialAuthRole] = useState('user'); // 'user' | 'admin'
+  const [initialAuthMode, setInitialAuthMode] = useState('login'); // 'login' | 'register'
+
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(1);
   const [isSwapModalOpen, setIsSwapModalOpen] = useState(false);
@@ -101,11 +104,16 @@ export const SkillXProvider = ({ children }) => {
   const [activeChatPeerId, setActiveChatPeerId] = useState('user-arun');
   const [unreadNotifCount, setUnreadNotifCount] = useState(2);
 
+  // Open Auth Modal for specific role/mode
+  const openAuthWithRole = (targetRole = 'user', targetMode = 'login') => {
+    setInitialAuthRole(targetRole);
+    setInitialAuthMode(targetMode);
+    setIsAuthModalOpen(true);
+  };
+
   // Effect: Apply theme preset classes on documentElement
   useEffect(() => {
     const root = document.documentElement;
-    
-    // Reset all theme classes first
     root.classList.remove('dark', 'light', 'theme-black-gold', 'theme-pastel-mixture', 'theme-white-gold');
 
     if (themePreset === 'black-gold') {
@@ -168,7 +176,7 @@ export const SkillXProvider = ({ children }) => {
     const targetRole = role || (found ? found.authRole : 'user');
 
     if (found && found.password !== password) {
-      return { success: false, message: 'Incorrect password' };
+      return { success: false, message: 'Incorrect password for this account.' };
     }
 
     let loggedUser = {
@@ -444,6 +452,9 @@ export const SkillXProvider = ({ children }) => {
         setIsThemeModalOpen,
         isAuthModalOpen,
         setIsAuthModalOpen,
+        initialAuthRole,
+        initialAuthMode,
+        openAuthWithRole,
         authRole,
         setAuthRole,
         loginUser,

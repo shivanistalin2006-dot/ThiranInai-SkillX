@@ -20,7 +20,8 @@ import {
   Palette,
   Crown,
   ShieldCheck,
-  LogOut
+  LogOut,
+  KeyRound
 } from 'lucide-react';
 import NotificationCenter from './NotificationCenter';
 
@@ -30,7 +31,7 @@ export default function Navbar() {
     toggleTheme,
     accentColor,
     setIsThemeModalOpen,
-    setIsAuthModalOpen,
+    openAuthWithRole,
     authRole,
     switchRole,
     logoutUser,
@@ -112,20 +113,6 @@ export default function Navbar() {
         {/* Right: Controls & Actions */}
         <div className="flex items-center space-x-2">
           
-          {/* Role Switcher Pill */}
-          <button
-            onClick={() => switchRole(authRole === 'admin' ? 'user' : 'admin')}
-            className={`hidden sm:flex items-center space-x-1 px-2.5 py-1 rounded-full text-[10px] font-bold border transition ${
-              authRole === 'admin'
-                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
-                : 'bg-brand-violet/20 text-brand-violet border-brand-violet/40 hover:bg-brand-violet/30'
-            }`}
-            title="Switch User / Admin View"
-          >
-            {authRole === 'admin' ? <Crown size={12} /> : <User size={12} />}
-            <span>Role: {authRole === 'admin' ? 'Admin' : 'User'}</span>
-          </button>
-
           {/* Language Switcher */}
           <div className="relative">
             <button
@@ -189,30 +176,39 @@ export default function Navbar() {
             {isNotifOpen && <NotificationCenter onClose={() => setIsNotifOpen(false)} />}
           </div>
 
-          {/* User Credits Counter */}
-          <button
-            onClick={() => handleNavClick('credits')}
-            className="hidden md:flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-brand-violet/10 border border-brand-violet/30 text-brand-violet hover:bg-brand-violet/20 transition text-xs font-bold"
-          >
-            <Zap size={14} className="fill-brand-violet text-brand-violet" />
-            <span>{currentUser.creditsBalance}</span>
-          </button>
+          {/* SEPARATE USER LOGIN & ADMIN LOGIN BUTTONS */}
+          <div className="hidden sm:flex items-center space-x-1.5 border-l border-white/10 pl-2">
+            
+            {/* User Login Button */}
+            <button
+              onClick={() => openAuthWithRole('user', 'login')}
+              className="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-200 text-xs font-bold transition flex items-center space-x-1 border border-white/10"
+              title="User Login (Student / Learner)"
+            >
+              <User size={13} className="text-brand-violet" />
+              <span>User Login</span>
+            </button>
 
-          {/* Log In & Register Auth Buttons */}
-          <button
-            onClick={() => setIsAuthModalOpen(true)}
-            className="text-xs font-bold text-slate-300 hover:text-white px-2.5 py-1.5 transition"
-          >
-            Log In
-          </button>
+            {/* Admin Login Button */}
+            <button
+              onClick={() => openAuthWithRole('admin', 'login')}
+              className="px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 text-xs font-extrabold transition flex items-center space-x-1"
+              title="Admin Login (Campus Administrator)"
+            >
+              <Crown size={13} className="text-amber-400" />
+              <span>Admin Login</span>
+            </button>
 
-          <button
-            onClick={() => setIsAuthModalOpen(true)}
-            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-brand-violet to-brand-cyan hover:opacity-95 text-white text-xs font-bold shadow-md transition flex items-center space-x-1"
-          >
-            <Sparkles size={14} />
-            <span>Register</span>
-          </button>
+            {/* Register Account Button */}
+            <button
+              onClick={() => openAuthWithRole('user', 'register')}
+              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-brand-violet to-brand-cyan text-white text-xs font-bold shadow transition flex items-center space-x-1"
+            >
+              <Sparkles size={13} />
+              <span>Register</span>
+            </button>
+
+          </div>
 
           {/* Mobile Hamburger Toggle */}
           <button
@@ -246,13 +242,21 @@ export default function Navbar() {
             );
           })}
 
-          <div className="pt-3 border-t border-white/10 flex items-center justify-between px-2">
+          <div className="pt-3 border-t border-white/10 grid grid-cols-2 gap-2 px-2">
             <button
-              onClick={() => { setIsAuthModalOpen(true); setIsMobileMenuOpen(false); }}
-              className="text-xs font-bold text-brand-cyan flex items-center space-x-1.5"
+              onClick={() => { openAuthWithRole('user', 'login'); setIsMobileMenuOpen(false); }}
+              className="p-2.5 rounded-xl bg-slate-800 text-xs font-bold text-slate-200 flex items-center justify-center space-x-1"
             >
-              <User size={16} />
-              <span>Log In / Register Account</span>
+              <User size={14} className="text-brand-violet" />
+              <span>User Login</span>
+            </button>
+
+            <button
+              onClick={() => { openAuthWithRole('admin', 'login'); setIsMobileMenuOpen(false); }}
+              className="p-2.5 rounded-xl bg-amber-500/20 text-xs font-bold text-amber-300 border border-amber-500/30 flex items-center justify-center space-x-1"
+            >
+              <Crown size={14} className="text-amber-400" />
+              <span>Admin Login</span>
             </button>
           </div>
         </div>
