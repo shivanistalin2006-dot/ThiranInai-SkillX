@@ -10,10 +10,12 @@ SKILLX is a peer-to-peer skill exchange platform built for college students, you
 
 ---
 
-## 🚀 Features
+## 🚀 Key Features
 
 - **2026 Startup Product Identity**: Deep Navy foundation, Warm Off-White surfaces, Electric Violet & Indigo accents, Cyan highlights, subtle glass panels.
-- **Theme & Color Customizer**: Dark Navy / Light mode toggle with 5 selectable accent palettes (Electric Violet, Emerald Mint, Cyber Cyan, Sunset Amber, Neon Rose).
+- **Theme Combinations (Gold & Black / Pastel Purple & White / White & Gold)**: 3 custom theme combinations + Times New Roman typography + high-contrast text color overrides.
+- **Multi-Role Authentication (User & Admin Logins)**: Separate User Profile and Campus Administrator Login options, persistent registrations, and demo credentials.
+- **Campus Admin Console Dashboard**: User management directory, skill verification approval queue, and campus skill-gap analytical reports.
 - **Multi-Language Support**: Native translation switcher supporting **English**, **Tamil (தமிழ்)**, and **Hindi (हिन्दी)**.
 - **Hero & Live Match Engine**: Interactive recommendation visual displaying Vaishnavi (Java → UI/UX) ↔ Arun (UI/UX → Java) 97% reciprocal compatibility match.
 - **AI Vector Compatibility Scoring**: Matches peers based on reciprocal skill goals, proficiency levels, spoken languages, trust scores, and availability.
