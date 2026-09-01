@@ -17,28 +17,28 @@ export default function ThemeModal({ isOpen, onClose }) {
   const specialThemes = [
     {
       id: 'black-gold',
-      name: 'Black & Gold 👑',
-      tagline: 'Luxury Obsidian & Metallic Gold',
+      name: 'Gold & Black Combination 👑',
+      tagline: 'Luxury Obsidian Black & Metallic Gold',
       icon: Crown,
-      badge: 'PREMIUM LUXURY',
+      badge: 'GOLD & BLACK',
       bgClass: 'bg-black text-amber-300 border-amber-500/50',
-      previewGradient: 'from-amber-500 to-yellow-600'
+      previewGradient: 'from-amber-500 via-yellow-500 to-amber-700'
     },
     {
       id: 'pastel-mixture',
-      name: 'Pastel Mixture 🎨',
-      tagline: 'Soft Lilac, Mint & Peach Mixture',
+      name: 'Pastel Purple & White 💜',
+      tagline: 'Dreamy Soft Pastel Lavender & Pristine White',
       icon: Heart,
-      badge: 'AESTHETIC SOFT',
+      badge: 'PASTEL PURPLE & WHITE',
       bgClass: 'bg-purple-100 text-purple-900 border-purple-300',
-      previewGradient: 'from-purple-400 via-pink-300 to-emerald-300'
+      previewGradient: 'from-purple-500 via-purple-300 to-white'
     },
     {
       id: 'white-gold',
-      name: 'White & Gold ✨',
+      name: 'White & Gold Combination ✨',
       tagline: 'Royal White & Warm Gold Foil',
       icon: Star,
-      badge: 'ROYAL ELEGANCE',
+      badge: 'WHITE & GOLD',
       bgClass: 'bg-amber-50/50 text-amber-900 border-amber-300',
       previewGradient: 'from-amber-400 to-yellow-500'
     }
@@ -68,7 +68,7 @@ export default function ThemeModal({ isOpen, onClose }) {
               <Palette size={20} />
             </div>
             <div>
-              <span className="text-[10px] font-bold tracking-widest text-brand-cyan uppercase">VISUAL SYSTEM</span>
+              <span className="text-[10px] font-bold tracking-widest text-brand-cyan uppercase">THEME SYSTEM</span>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">Theme & Color Customizer</h3>
             </div>
           </div>
@@ -82,14 +82,14 @@ export default function ThemeModal({ isOpen, onClose }) {
 
         <div className="space-y-6 pt-6 max-h-[75vh] overflow-y-auto pr-1">
           
-          {/* SPECIAL 3 FEATURED THEMES */}
+          {/* FEATURED THEME COMBINATIONS */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center space-x-1.5">
                 <Crown size={14} />
-                <span>Featured Custom Themes</span>
+                <span>Featured Theme Combinations</span>
               </label>
-              <span className="text-[10px] font-bold text-brand-cyan uppercase">3 Special Presets</span>
+              <span className="text-[10px] font-bold text-brand-cyan uppercase">Custom Presets</span>
             </div>
 
             <div className="grid grid-cols-1 gap-3">
@@ -169,9 +169,9 @@ export default function ThemeModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          {/* Accent Colors (for Standard Modes) */}
+          {/* Accent Colors */}
           <div className="space-y-3 pt-2 border-t border-white/10">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Accent Color</label>
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Accent Colors</label>
             <div className="grid grid-cols-5 gap-2">
               {colorPalettes.map((cp) => {
                 const active = accentColor === cp.id;
