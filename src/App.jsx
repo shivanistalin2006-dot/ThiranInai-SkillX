@@ -7,6 +7,7 @@ import SwapModal from './components/modals/SwapModal';
 import AddSkillModal from './components/modals/AddSkillModal';
 import ThemeModal from './components/modals/ThemeModal';
 import AuthModal from './components/modals/AuthModal';
+import CameraModal from './components/modals/CameraModal';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -24,7 +25,16 @@ import SettingsPage from './pages/SettingsPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 
 function MainContent() {
-  const { currentView, isThemeModalOpen, setIsThemeModalOpen, isAuthModalOpen, setIsAuthModalOpen } = useSkillX();
+  const {
+    currentView,
+    isThemeModalOpen,
+    setIsThemeModalOpen,
+    isAuthModalOpen,
+    setIsAuthModalOpen,
+    isCameraModalOpen,
+    setIsCameraModalOpen,
+    updateAvatar
+  } = useSkillX();
 
   const renderView = () => {
     switch (currentView) {
@@ -75,6 +85,11 @@ function MainContent() {
       <AddSkillModal />
       <ThemeModal isOpen={isThemeModalOpen} onClose={() => setIsThemeModalOpen(false)} />
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      <CameraModal
+        isOpen={isCameraModalOpen}
+        onClose={() => setIsCameraModalOpen(false)}
+        onImageCaptured={(imageData) => updateAvatar(imageData)}
+      />
     </div>
   );
 }

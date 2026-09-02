@@ -94,6 +94,9 @@ export const SkillXProvider = ({ children }) => {
   const [initialAuthRole, setInitialAuthRole] = useState('user'); // 'user' | 'admin'
   const [initialAuthMode, setInitialAuthMode] = useState('login'); // 'login' | 'register'
 
+  const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
+  const [cameraTarget, setCameraTarget] = useState('avatar'); // 'avatar' | 'skillProof'
+
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(1);
   const [isSwapModalOpen, setIsSwapModalOpen] = useState(false);
@@ -103,6 +106,20 @@ export const SkillXProvider = ({ children }) => {
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [activeChatPeerId, setActiveChatPeerId] = useState('user-arun');
   const [unreadNotifCount, setUnreadNotifCount] = useState(2);
+
+  // Open Camera / Image Upload Modal
+  const openCameraModal = (target = 'avatar') => {
+    setCameraTarget(target);
+    setIsCameraModalOpen(true);
+  };
+
+  // Update Avatar Photo
+  const updateAvatar = (imageDataUrl) => {
+    setCurrentUser(prev => ({
+      ...prev,
+      avatar: imageDataUrl
+    }));
+  };
 
   // Open Auth Modal for specific role/mode
   const openAuthWithRole = (targetRole = 'user', targetMode = 'login') => {
@@ -221,6 +238,7 @@ export const SkillXProvider = ({ children }) => {
       institution: userData.institution || 'College of Engineering',
       trustScore: userData.authRole === 'admin' ? 99 : 85,
       creditsBalance: userData.authRole === 'admin' ? 5000 : 500,
+      avatar: userData.avatar || initialCurrentUser.avatar,
       skillsTeach: userData.authRole === 'admin' ? [] : [
         { id: `st-${Date.now()}`, name: 'General Mentorship', category: 'Academics', level: 'Intermediate', verified: true, hoursTaught: 0 }
       ],
@@ -455,6 +473,10 @@ export const SkillXProvider = ({ children }) => {
         initialAuthRole,
         initialAuthMode,
         openAuthWithRole,
+        isCameraModalOpen,
+        setIsCameraModalOpen,
+        openCameraModal,
+        updateAvatar,
         authRole,
         setAuthRole,
         loginUser,

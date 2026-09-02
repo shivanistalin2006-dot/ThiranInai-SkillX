@@ -1,9 +1,9 @@
 import React from 'react';
 import { useSkillX } from '../context/SkillXContext';
-import { Award, ShieldCheck, CheckCircle, Zap, Clock, Star, Calendar, BookOpen, Target, FileText, ExternalLink, Plus } from 'lucide-react';
+import { Award, ShieldCheck, CheckCircle, Zap, Clock, Star, Calendar, BookOpen, Target, FileText, ExternalLink, Plus, Camera, Upload } from 'lucide-react';
 
 export default function SkillPassportPage() {
-  const { currentUser, openAddSkillModal } = useSkillX();
+  const { currentUser, openAddSkillModal, openCameraModal } = useSkillX();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
@@ -16,7 +16,26 @@ export default function SkillPassportPage() {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b border-white/10">
           
           <div className="flex items-center space-x-5">
-            <img src={currentUser.avatar} alt={currentUser.name} className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl object-cover ring-4 ring-brand-violet/50 shadow-2xl" />
+            
+            {/* Interactive Avatar with Camera Upload Overlay */}
+            <div className="relative group cursor-pointer" onClick={() => openCameraModal('avatar')}>
+              <img
+                src={currentUser.avatar}
+                alt={currentUser.name}
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl object-cover ring-4 ring-brand-violet/50 shadow-2xl transition group-hover:opacity-80"
+              />
+              <div className="absolute inset-0 rounded-3xl bg-black/60 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center text-white text-[10px] font-bold space-y-0.5">
+                <Camera size={20} className="text-brand-cyan" />
+                <span>Snap / Upload</span>
+              </div>
+              <button
+                className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-brand-violet text-white shadow-lg border-2 border-slate-900 group-hover:scale-110 transition"
+                title="Change Photo via Device Camera or File"
+              >
+                <Camera size={12} />
+              </button>
+            </div>
+
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-[10px] font-bold tracking-widest text-brand-cyan uppercase">DIGITAL SKILL PASSPORT</span>
@@ -30,7 +49,17 @@ export default function SkillPassportPage() {
               <p className="text-xs text-slate-300 dark:text-slate-300 light:text-slate-700 mt-2 max-w-xl italic">
                 "{currentUser.bio}"
               </p>
+
+              {/* Take/Upload Photo Button */}
+              <button
+                onClick={() => openCameraModal('avatar')}
+                className="mt-3 inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-brand-violet/20 hover:bg-brand-violet/30 text-brand-violet text-xs font-bold transition border border-brand-violet/30"
+              >
+                <Camera size={14} />
+                <span>Take Photo / Upload Image</span>
+              </button>
             </div>
+
           </div>
 
           {/* Trust Score circular gauge card */}
@@ -59,25 +88,25 @@ export default function SkillPassportPage() {
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-900/40 light:bg-slate-50 border border-white/5 space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase font-semibold">Completed Sessions</span>
+            <span className="text-[10px] text-slate-400 uppercase font-semibold">Sessions Completed</span>
             <div className="text-xl font-black text-white flex items-center space-x-1">
-              <Calendar size={16} className="text-brand-cyan" />
-              <span>{currentUser.sessionsCompleted} sessions</span>
+              <BookOpen size={16} className="text-brand-cyan" />
+              <span>{currentUser.sessionsCompleted}</span>
             </div>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-900/40 light:bg-slate-50 border border-white/5 space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase font-semibold">Learner Rating</span>
-            <div className="text-xl font-black text-white flex items-center space-x-1">
-              <Star size={16} className="text-amber-400 fill-amber-400" />
-              <span>{currentUser.rating} / 5.0</span>
+            <span className="text-[10px] text-slate-400 uppercase font-semibold">Average Rating</span>
+            <div className="text-xl font-black text-amber-400 flex items-center space-x-1">
+              <Star size={16} className="fill-amber-400 text-amber-400" />
+              <span>{currentUser.rating}</span>
             </div>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-900/40 light:bg-slate-50 border border-white/5 space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase font-semibold">SkillX Credits</span>
-            <div className="text-xl font-black text-white flex items-center space-x-1">
-              <Zap size={16} className="text-brand-violet fill-brand-violet" />
+            <span className="text-[10px] text-slate-400 uppercase font-semibold">SkillX Balance</span>
+            <div className="text-xl font-black text-emerald-400 flex items-center space-x-1">
+              <Zap size={16} className="fill-emerald-400" />
               <span>{currentUser.creditsBalance}</span>
             </div>
           </div>
@@ -85,121 +114,114 @@ export default function SkillPassportPage() {
 
       </div>
 
-      {/* Skills Inventory & Verification Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* Main Grid: Verified Skills + Certifications */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Left Column: Verified Skills List */}
-        <div className="lg:col-span-7 glass-panel p-6 sm:p-8 rounded-3xl border border-white/10 space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Verified Skill Credentials</h3>
-              <p className="text-xs text-slate-400">Skills logged on your immutable platform passport.</p>
-            </div>
-            <button
-              onClick={() => openAddSkillModal('teach')}
-              className="px-3 py-1.5 rounded-xl bg-brand-violet text-white text-xs font-bold hover:bg-brand-violet-hover transition flex items-center space-x-1"
-            >
-              <Plus size={14} />
-              <span>Add Skill</span>
-            </button>
-          </div>
-
-          <div className="space-y-3">
-            {currentUser.skillsTeach.map((s) => (
-              <div
-                key={s.name}
-                className="p-4 rounded-2xl bg-slate-900/60 light:bg-slate-100 border border-white/5 flex items-center justify-between"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="p-2.5 rounded-xl bg-brand-violet/20 text-brand-violet font-bold text-xs">
-                    {s.name.substring(0, 2).toUpperCase()}
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center space-x-1">
-                      <span>{s.name}</span>
-                      {s.verified && <CheckCircle size={14} className="text-brand-cyan" />}
-                    </h4>
-                    <span className="text-[11px] text-slate-400">{s.category} · {s.hoursTaught} hours taught</span>
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <span className="px-3 py-1 rounded-full bg-brand-violet/20 text-brand-violet text-xs font-bold border border-brand-violet/30">
-                    {s.level}
-                  </span>
-                </div>
+        {/* Left 2 Cols: Verified Skills & Goals */}
+        <div className="lg:col-span-2 space-y-8">
+          
+          {/* Skills Mastered & Teaching */}
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/10 space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                  <Award className="text-brand-violet" size={20} />
+                  <span>Mastered Skills (Can Teach)</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">Skills verified through peer sessions, tests, and certificates</p>
               </div>
-            ))}
-          </div>
+              <button
+                onClick={() => openAddSkillModal('teach')}
+                className="p-2 rounded-xl bg-brand-violet/20 text-brand-violet hover:bg-brand-violet/30 transition text-xs font-bold flex items-center space-x-1"
+              >
+                <Plus size={14} />
+                <span>Add Skill</span>
+              </button>
+            </div>
 
-          {/* Verification Source Proofs */}
-          <div className="pt-4 border-t border-white/10 space-y-3">
-            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Verification Sources</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {currentUser.verificationSources.map((v, i) => (
-                <div key={i} className="p-3 rounded-xl bg-slate-900/40 border border-white/5 text-xs space-y-1">
-                  <div className="font-bold text-slate-200 flex items-center space-x-1">
-                    <CheckCircle size={12} className="text-emerald-400" />
-                    <span>{v.type}</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {currentUser.skillsTeach.map((skill) => (
+                <div key={skill.id} className="p-4 rounded-2xl bg-slate-900/60 light:bg-slate-100 border border-white/5 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-brand-cyan px-2 py-0.5 rounded bg-brand-cyan/10">
+                      {skill.category}
+                    </span>
+                    {skill.verified && (
+                      <span className="flex items-center space-x-1 text-[10px] font-bold text-emerald-400">
+                        <CheckCircle size={12} />
+                        <span>VERIFIED</span>
+                      </span>
+                    )}
                   </div>
-                  <div className="text-[11px] text-slate-400">{v.detail}</div>
+                  <h4 className="text-base font-extrabold text-slate-900 dark:text-white">{skill.name}</h4>
+                  <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-white/5">
+                    <span>Level: <strong className="text-white">{skill.level}</strong></span>
+                    <span>Taught: <strong className="text-brand-violet">{skill.hoursTaught} hrs</strong></span>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
+
+          {/* Target Skills Learning */}
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/10 space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                  <Target className="text-brand-cyan" size={20} />
+                  <span>Target Skills (Currently Learning)</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">Active goals tracked with peer mentors</p>
+              </div>
+              <button
+                onClick={() => openAddSkillModal('learn')}
+                className="p-2 rounded-xl bg-brand-cyan/20 text-brand-cyan hover:bg-brand-cyan/30 transition text-xs font-bold flex items-center space-x-1"
+              >
+                <Plus size={14} />
+                <span>Add Goal</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {currentUser.skillsLearn.map((skill) => (
+                <div key={skill.id} className="p-4 rounded-2xl bg-slate-900/60 light:bg-slate-100 border border-white/5 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-brand-violet px-2 py-0.5 rounded bg-brand-violet/10">
+                      {skill.category}
+                    </span>
+                    <span className="text-xs font-bold text-brand-cyan">{skill.progress}% Progress</span>
+                  </div>
+                  <h4 className="text-base font-extrabold text-slate-900 dark:text-white">{skill.name}</h4>
+                  <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-brand-violet to-brand-cyan transition-all duration-500" style={{ width: `${skill.progress}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
 
-        {/* Right Column: Badges & Activity Timeline */}
-        <div className="lg:col-span-5 space-y-6">
-          
-          {/* Badges Box */}
+        {/* Right Col: Verifications & Badges */}
+        <div className="space-y-6">
           <div className="glass-panel p-6 rounded-3xl border border-white/10 space-y-4">
             <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
-              <Award size={18} className="text-amber-400" />
-              <span>Earned Community Badges</span>
+              <ShieldCheck size={18} className="text-emerald-400" />
+              <span>Verification Proofs</span>
             </h3>
-            
-            <div className="grid grid-cols-1 gap-2.5">
-              {currentUser.badges.map((b) => (
-                <div key={b} className="p-3 rounded-xl bg-slate-900/60 light:bg-slate-100 border border-amber-400/20 flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center font-bold text-xs">
-                    ★
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-slate-900 dark:text-white">{b}</div>
-                    <div className="text-[10px] text-slate-400">Awarded for high session ratings & contribution</div>
-                  </div>
-                </div>
-              ))}
+            <div className="space-y-3 text-xs">
+              <div className="p-3 rounded-xl bg-slate-900/50 light:bg-slate-100 border border-white/5 space-y-1">
+                <div className="font-bold text-white">Java SE 17 Certified Developer</div>
+                <div className="text-slate-400 text-[11px]">Oracle Certificate #948271</div>
+                <span className="inline-block px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold mt-1">Verified Proof</span>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-900/50 light:bg-slate-100 border border-white/5 space-y-1">
+                <div className="font-bold text-white">College Peer Evaluation (CEG)</div>
+                <div className="text-slate-400 text-[11px]">18 Peer Reviews (5.0 Rating)</div>
+                <span className="inline-block px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold mt-1">Peer Endorsed</span>
+              </div>
             </div>
           </div>
-
-          {/* Passport Activity Log */}
-          <div className="glass-panel p-6 rounded-3xl border border-white/10 space-y-4">
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Skill Activity Timeline</h3>
-            <div className="space-y-3 pl-2 border-l-2 border-brand-violet/30 text-xs">
-              
-              <div className="relative pl-4 space-y-0.5">
-                <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-brand-violet" />
-                <div className="font-bold text-white">Taught Java OOP Patterns</div>
-                <div className="text-[11px] text-slate-400">Session with Arun K. · +120 Credits</div>
-              </div>
-
-              <div className="relative pl-4 space-y-0.5">
-                <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-brand-cyan" />
-                <div className="font-bold text-white">Learned UI/UX Auto-Layout</div>
-                <div className="text-[11px] text-slate-400">Session with Arun K. · -80 Credits</div>
-              </div>
-
-              <div className="relative pl-4 space-y-0.5">
-                <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                <div className="font-bold text-white">Verified Java Expert Credential</div>
-                <div className="text-[11px] text-slate-400">Passed Community Code Check</div>
-              </div>
-
-            </div>
-          </div>
-
         </div>
 
       </div>

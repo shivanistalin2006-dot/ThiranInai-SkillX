@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useSkillX } from '../context/SkillXContext';
-import { Settings, User, Bell, Globe, Moon, Sun, Save, CheckCircle } from 'lucide-react';
+import { Settings, User, Bell, Globe, Moon, Sun, Save, CheckCircle, Camera, Upload } from 'lucide-react';
 
 export default function SettingsPage() {
-  const { currentUser, setCurrentUser, theme, toggleTheme, lang, setLang } = useSkillX();
+  const { currentUser, setCurrentUser, theme, toggleTheme, lang, setLang, openCameraModal } = useSkillX();
 
   const [name, setName] = useState(currentUser.name);
   const [bio, setBio] = useState(currentUser.bio);
@@ -36,7 +36,7 @@ export default function SettingsPage() {
           Account Settings
         </h1>
         <p className="text-xs sm:text-sm text-slate-400">
-          Manage your Skill Passport profile, notifications, theme, and spoken language preferences.
+          Manage your Skill Passport profile, camera avatar photo, notifications, and language preferences.
         </p>
       </div>
 
@@ -54,6 +54,33 @@ export default function SettingsPage() {
           <User size={18} className="text-brand-violet" />
           <span>Profile & Skill Passport Identity</span>
         </h3>
+
+        {/* Profile Picture Camera / Upload Bar */}
+        <div className="flex items-center space-x-4 p-4 rounded-2xl bg-slate-900/60 light:bg-slate-100 border border-white/5">
+          <div className="relative group cursor-pointer" onClick={() => openCameraModal('avatar')}>
+            <img
+              src={currentUser.avatar}
+              alt={currentUser.name}
+              className="w-16 h-16 rounded-2xl object-cover ring-2 ring-brand-violet"
+            />
+            <div className="absolute inset-0 rounded-2xl bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white">
+              <Camera size={18} />
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-xs font-bold text-slate-900 dark:text-white">Profile Photo & Avatar</h4>
+            <p className="text-[11px] text-slate-400">Upload an image file or snap a live selfie with your device camera</p>
+            <button
+              type="button"
+              onClick={() => openCameraModal('avatar')}
+              className="mt-2 px-3 py-1.5 rounded-xl bg-brand-violet/20 hover:bg-brand-violet/30 text-brand-violet text-xs font-bold transition flex items-center space-x-1.5 border border-brand-violet/30"
+            >
+              <Camera size={13} />
+              <span>Change Photo via Camera / File</span>
+            </button>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
@@ -78,18 +105,18 @@ export default function SettingsPage() {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-300 mb-1">Bio / Skill Passport Statement</label>
+          <label className="block text-xs font-semibold text-slate-300 mb-1">Personal Bio</label>
           <textarea
-            rows={3}
             value={bio}
             onChange={(e) => setBio(e.target.value)}
-            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/60 light:bg-slate-100 border border-white/10 text-xs text-white light:text-slate-800 resize-none"
+            rows={3}
+            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/60 light:bg-slate-100 border border-white/10 text-xs font-semibold text-white light:text-slate-800"
           />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Location</label>
+            <label className="block text-xs font-semibold text-slate-300 mb-1">Campus / Location</label>
             <input
               type="text"
               value={location}
@@ -99,7 +126,7 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Typical Availability</label>
+            <label className="block text-xs font-semibold text-slate-300 mb-1">Weekly Availability</label>
             <input
               type="text"
               value={availability}
@@ -109,52 +136,10 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Theme & Language Controls */}
-        <div className="pt-4 border-t border-white/10 space-y-4">
-          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Interface Preferences</h4>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            
-            {/* Theme Toggle */}
-            <div className="p-4 rounded-2xl bg-slate-900/60 light:bg-slate-100 border border-white/5 flex items-center justify-between">
-              <div className="flex items-center space-x-2 text-xs font-semibold text-white light:text-slate-800">
-                {theme === 'dark' ? <Moon size={16} className="text-brand-violet" /> : <Sun size={16} className="text-amber-400" />}
-                <span>Theme Mode: {theme === 'dark' ? 'Dark' : 'Light'}</span>
-              </div>
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="px-3 py-1.5 rounded-xl bg-brand-violet text-white text-xs font-bold hover:bg-brand-violet-hover transition"
-              >
-                Switch Theme
-              </button>
-            </div>
-
-            {/* Language Selection */}
-            <div className="p-4 rounded-2xl bg-slate-900/60 light:bg-slate-100 border border-white/5 flex items-center justify-between">
-              <div className="flex items-center space-x-2 text-xs font-semibold text-white light:text-slate-800">
-                <Globe size={16} className="text-brand-cyan" />
-                <span>Language</span>
-              </div>
-              <select
-                value={lang}
-                onChange={(e) => setLang(e.target.value)}
-                className="px-3 py-1.5 rounded-xl bg-slate-800 light:bg-white text-white light:text-slate-800 text-xs font-bold border border-white/10"
-              >
-                <option value="en">English (EN)</option>
-                <option value="ta">தமிழ் (TA)</option>
-                <option value="hi">हिन्दी (HI)</option>
-              </select>
-            </div>
-
-          </div>
-        </div>
-
-        {/* Submit */}
         <div className="pt-2">
           <button
             type="submit"
-            className="px-6 py-3 rounded-2xl bg-brand-violet hover:bg-brand-violet-hover text-white font-bold text-xs shadow-lg transition flex items-center space-x-2"
+            className="px-6 py-3 rounded-2xl bg-gradient-to-r from-brand-violet to-brand-cyan text-white text-xs font-black shadow-lg hover:opacity-95 transition flex items-center space-x-2"
           >
             <Save size={16} />
             <span>Save Profile Settings</span>
