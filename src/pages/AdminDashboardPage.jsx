@@ -14,14 +14,31 @@ import {
   BarChart3,
   UserCheck,
   Plus,
-  Crown
+  Crown,
+  Mail,
+  Trash2,
+  Lock
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
-  const { peers, swaps, currentUser, setCurrentUser } = useSkillX();
+  const {
+    peers,
+    swaps,
+    currentUser,
+    authorizedEmails,
+    addAuthorizedEmail,
+    removeAuthorizedEmail
+  } = useSkillX();
 
-  const [activeTab, setActiveTab] = useState('users'); // 'users' | 'verifications' | 'disputes' | 'analytics'
+  const [activeTab, setActiveTab] = useState('users'); // 'users' | 'verifications' | 'whitelist' | 'analytics'
   const [userSearch, setUserSearch] = useState('');
+  
+  // Whitelist Form State
+  const [newEmail, setNewEmail] = useState('');
+  const [newName, setNewName] = useState('');
+  const [newRole, setNewRole] = useState('User');
+  const [whitelistNotice, setWhitelistNotice] = useState('');
+
   const [userList, setUserList] = useState([
     { id: 'user-vaishnavi', name: 'Vaishnavi R.', email: 'vaishnavi@ceg.edu', role: 'User', status: 'Active', credits: 1240, trustScore: 94 },
     { id: 'admin-1', name: 'Dr. S. Raman (Admin)', email: 'admin@thiraninai.edu', role: 'Admin', status: 'Active', credits: 5000, trustScore: 99 },
@@ -64,6 +81,24 @@ export default function AdminDashboardPage() {
     setPendingVerifications(prev => prev.filter(v => v.id !== id));
   };
 
+  // Handle Add Authorized Email
+  const handleAddWhitelist = (e) => {
+    e.preventDefault();
+    setWhitelistNotice('');
+
+    if (!newEmail) return;
+
+    const res = addAuthorizedEmail(newEmail, newName || 'Whitelisted Student', newRole);
+    if (res.success) {
+      setWhitelistNotice(res.message);
+      setNewEmail('');
+      setNewName('');
+      setTimeout(() => setWhitelistNotice(''), 3000);
+    } else {
+      setWhitelistNotice(res.message);
+    }
+  };
+
   const filteredUsers = userList.filter(u =>
     u.name.toLowerCase().includes(userSearch.toLowerCase()) ||
     u.email.toLowerCase().includes(userSearch.toLowerCase())
@@ -85,7 +120,7 @@ export default function AdminDashboardPage() {
               <Crown size={24} className="text-amber-400" />
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              Manage platform users, verify skill credentials, grant credits, and review campus skill-gap analytics.
+              Manage platform users, authorize Google emails, verify skill credentials, and review campus skill-gap analytics.
             </p>
           </div>
 
@@ -110,20 +145,20 @@ export default function AdminDashboardPage() {
 
           <div className="p-4 rounded-2xl bg-slate-900/60 light:bg-slate-100 border border-white/5 space-y-1">
             <span className="text-[10px] uppercase font-bold text-slate-400 flex items-center justify-between">
+              <span>Whitelisted Google Emails</span>
+              <Mail size={14} className="text-emerald-400" />
+            </span>
+            <div className="text-2xl font-black text-emerald-400">{authorizedEmails.length}</div>
+            <span className="text-[10px] text-emerald-300 font-semibold">Authorized Accounts</span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-900/60 light:bg-slate-100 border border-white/5 space-y-1">
+            <span className="text-[10px] uppercase font-bold text-slate-400 flex items-center justify-between">
               <span>Active Swaps</span>
               <FileCheck size={14} className="text-brand-cyan" />
             </span>
             <div className="text-2xl font-black text-white">{swaps.length + 14}</div>
             <span className="text-[10px] text-slate-400">97% completion</span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-slate-900/60 light:bg-slate-100 border border-white/5 space-y-1">
-            <span className="text-[10px] uppercase font-bold text-slate-400 flex items-center justify-between">
-              <span>Credits Circulated</span>
-              <Zap size={14} className="text-amber-400" />
-            </span>
-            <div className="text-2xl font-black text-white">48,250</div>
-            <span className="text-[10px] text-slate-400">SkillX Currency</span>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-900/60 light:bg-slate-100 border border-white/5 space-y-1">
@@ -148,7 +183,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Admin Tabs Bar */}
-      <div className="flex items-center space-x-2 border-b border-white/10 pb-2">
+      <div className="flex items-center space-x-2 border-b border-white/10 pb-2 overflow-x-auto">
         <button
           onClick={() => setActiveTab('users')}
           className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 transition ${
@@ -160,6 +195,16 @@ export default function AdminDashboardPage() {
         </button>
 
         <button
+          onClick={() => setActiveTab('whitelist')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 transition ${
+            activeTab === 'whitelist' ? 'bg-amber-500 text-slate-950 shadow-lg' : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <Mail size={16} />
+          <span>Authorized Google Whitelist ({authorizedEmails.length})</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('verifications')}
           className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 transition relative ${
             activeTab === 'verifications' ? 'bg-amber-500 text-slate-950 shadow-lg' : 'text-slate-400 hover:text-white'
@@ -167,9 +212,6 @@ export default function AdminDashboardPage() {
         >
           <Award size={16} />
           <span>Verification Queue ({pendingVerifications.length})</span>
-          {pendingVerifications.length > 0 && (
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-          )}
         </button>
 
         <button
@@ -271,7 +313,125 @@ export default function AdminDashboardPage() {
         </div>
       )}
 
-      {/* TAB 2: VERIFICATION QUEUE */}
+      {/* TAB 2: AUTHORIZED GOOGLE EMAIL WHITELIST MANAGER */}
+      {activeTab === 'whitelist' && (
+        <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/10 space-y-6">
+          
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
+            <div>
+              <h3 className="text-base font-bold text-white flex items-center space-x-2">
+                <ShieldCheck size={18} className="text-emerald-400" />
+                <span>Authorized Google Email Whitelist</span>
+              </h3>
+              <p className="text-xs text-slate-400 mt-1">
+                Only Google emails registered in this whitelist can log in via Google OAuth. Unauthorized emails will be denied access.
+              </p>
+            </div>
+          </div>
+
+          {whitelistNotice && (
+            <div className="p-3 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-bold animate-fadeIn">
+              {whitelistNotice}
+            </div>
+          )}
+
+          {/* Form: Add New Authorized Google Email */}
+          <form onSubmit={handleAddWhitelist} className="p-5 rounded-2xl bg-slate-900/60 light:bg-slate-100 border border-white/10 space-y-3">
+            <h4 className="text-xs font-bold uppercase text-brand-cyan tracking-wider flex items-center space-x-1.5">
+              <Plus size={14} />
+              <span>Whitelist New Google Account Email</span>
+            </h4>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-300 mb-1">Student / Staff Name</label>
+                <input
+                  type="text"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="E.g., Ananya S."
+                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-xs text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-300 mb-1">Google Email Address</label>
+                <input
+                  type="email"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  placeholder="ananya@ceg.edu"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-xs text-white"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-300 mb-1">Role Assignment</label>
+                <select
+                  value={newRole}
+                  onChange={(e) => setNewRole(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-xs text-white"
+                >
+                  <option value="User">User (Student/Learner)</option>
+                  <option value="Admin">Admin (Campus Administrator)</option>
+                </select>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs shadow flex items-center space-x-1.5 transition"
+            >
+              <ShieldCheck size={14} />
+              <span>Authorize & Whitelist Email</span>
+            </button>
+          </form>
+
+          {/* Whitelisted Emails Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-300 border-collapse">
+              <thead>
+                <tr className="border-b border-white/10 text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
+                  <th className="p-3">Authorized User</th>
+                  <th className="p-3">Whitelisted Google Email</th>
+                  <th className="p-3">Access Role</th>
+                  <th className="p-3">Date Added</th>
+                  <th className="p-3 text-right">Revoke Access</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {authorizedEmails.map((a) => (
+                  <tr key={a.email} className="hover:bg-slate-800/40 transition">
+                    <td className="p-3 font-bold text-white">{a.name}</td>
+                    <td className="p-3 text-slate-300 font-mono">{a.email}</td>
+                    <td className="p-3">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                        a.role === 'Admin' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-400'
+                      }`}>
+                        {a.role} Authorized
+                      </span>
+                    </td>
+                    <td className="p-3 text-slate-400">{a.date}</td>
+                    <td className="p-3 text-right">
+                      <button
+                        onClick={() => removeAuthorizedEmail(a.email)}
+                        className="px-2.5 py-1 rounded bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 font-bold text-[10px] transition flex items-center space-x-1 ml-auto"
+                      >
+                        <Trash2 size={12} />
+                        <span>Revoke</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      )}
+
+      {/* TAB 3: VERIFICATION QUEUE */}
       {activeTab === 'verifications' && (
         <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/10 space-y-6">
           <div>
@@ -324,7 +484,7 @@ export default function AdminDashboardPage() {
         </div>
       )}
 
-      {/* TAB 3: CAMPUS SKILL-GAP ANALYTICS */}
+      {/* TAB 4: CAMPUS SKILL-GAP ANALYTICS */}
       {activeTab === 'analytics' && (
         <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/10 space-y-6">
           <div>

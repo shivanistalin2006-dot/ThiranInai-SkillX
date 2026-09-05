@@ -70,6 +70,22 @@ export const SkillXProvider = ({ children }) => {
     }
   });
 
+  // Whitelisted / Authorized Emails registered by Admin
+  const [authorizedEmails, setAuthorizedEmails] = useState(() => {
+    try {
+      const saved = localStorage.getItem('skillx_authorized_emails');
+      return saved ? JSON.parse(saved) : [
+        { email: 'vaishnavi@ceg.edu', name: 'Vaishnavi R.', role: 'User', authRole: 'user', addedBy: 'Admin', date: 'Aug 2026' },
+        { email: 'admin@thiraninai.edu', name: 'Dr. S. Raman', role: 'Admin', authRole: 'admin', addedBy: 'System', date: 'Aug 2026' },
+        { email: 'arun@nid.edu', name: 'Arun Kumar', role: 'User', authRole: 'user', addedBy: 'Admin', date: 'Aug 2026' },
+        { email: 'priya@iitm.ac.in', name: 'Priya Sharma', role: 'User', authRole: 'user', addedBy: 'Admin', date: 'Aug 2026' },
+        { email: 'rahul@xaviers.edu', name: 'Rahul Verma', role: 'User', authRole: 'user', addedBy: 'Admin', date: 'Aug 2026' }
+      ];
+    } catch (e) {
+      return [];
+    }
+  });
+
   const [registeredUsers, setRegisteredUsers] = useState(() => {
     try {
       const saved = localStorage.getItem('skillx_registered_users');
@@ -159,14 +175,15 @@ export const SkillXProvider = ({ children }) => {
     } catch (e) {}
   }, [themePreset, theme, accentColor]);
 
-  // Effect: Persist Authentication
+  // Effect: Persist Authentication & Authorized Email Whitelist
   useEffect(() => {
     try {
       localStorage.setItem('skillx_auth_user', JSON.stringify(currentUser));
       localStorage.setItem('skillx_auth_role', authRole);
       localStorage.setItem('skillx_registered_users', JSON.stringify(registeredUsers));
+      localStorage.setItem('skillx_authorized_emails', JSON.stringify(authorizedEmails));
     } catch (e) {}
-  }, [currentUser, authRole, registeredUsers]);
+  }, [currentUser, authRole, registeredUsers, authorizedEmails]);
 
   // Effect: Language persistence
   useEffect(() => {
@@ -189,7 +206,8 @@ export const SkillXProvider = ({ children }) => {
 
   // Auth Functions
   const loginUser = (email, password, role) => {
-    const found = registeredUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+    const normEmail = email.trim().toLowerCase();
+    const found = registeredUsers.find(u => u.email.toLowerCase() === normEmail);
     const targetRole = role || (found ? found.authRole : 'user');
 
     if (found && found.password !== password) {
@@ -199,7 +217,7 @@ export const SkillXProvider = ({ children }) => {
     let loggedUser = {
       ...initialCurrentUser,
       name: found ? found.name : email.split('@')[0],
-      email: email,
+      email: normEmail,
       role: targetRole === 'admin' ? 'Campus Administrator' : 'Computer Science Student',
       trustScore: targetRole === 'admin' ? 99 : 94,
       creditsBalance: targetRole === 'admin' ? 5000 : 1240
@@ -217,9 +235,80 @@ export const SkillXProvider = ({ children }) => {
     return { success: true };
   };
 
+  // Google OAuth Login with Strict Admin Whitelist Authorization
+  const loginWithGoogle = (emailInput) => {
+    if (!emailInput) return { success: false, message: 'Please provide a valid Google email address.' };
+    const normEmail = emailInput.trim().toLowerCase();
+
+    // Check if email is in Admin Whitelist or Registered Directory
+    const isWhitelisted = authorizedEmails.some(a => a.email.toLowerCase() === normEmail);
+    const isRegistered = registeredUsers.some(r => r.email.toLowerCase() === normEmail);
+
+    if (!isWhitelisted && !isRegistered) {
+      return {
+        success: false,
+        message: `Access Denied: The Google account "${normEmail}" is not authorized by the Campus Administrator. Only admin-registered emails can log in.`
+      };
+    }
+
+    // Retrieve user details from Whitelist or Registered Users
+    const authEntry = authorizedEmails.find(a => a.email.toLowerCase() === normEmail) ||
+                      registeredUsers.find(r => r.email.toLowerCase() === normEmail);
+
+    const userRole = authEntry?.authRole || (normEmail.includes('admin') ? 'admin' : 'user');
+
+    const loggedUser = {
+      ...initialCurrentUser,
+      id: `user-${Date.now()}`,
+      name: authEntry?.name || normEmail.split('@')[0],
+      email: normEmail,
+      role: userRole === 'admin' ? 'Campus Administrator' : 'Authorized Student Learner',
+      trustScore: userRole === 'admin' ? 99 : 92,
+      creditsBalance: userRole === 'admin' ? 5000 : 1000
+    };
+
+    setCurrentUser(loggedUser);
+    setAuthRole(userRole);
+
+    if (userRole === 'admin') {
+      setCurrentView('admin');
+    } else {
+      setCurrentView('dashboard');
+    }
+
+    return { success: true };
+  };
+
+  // Admin Function: Add new email to Authorized Whitelist
+  const addAuthorizedEmail = (email, name = 'Authorized Learner', role = 'User') => {
+    const normEmail = email.trim().toLowerCase();
+    if (authorizedEmails.some(a => a.email.toLowerCase() === normEmail)) {
+      return { success: false, message: 'This email is already in the authorized whitelist!' };
+    }
+
+    const newAuth = {
+      email: normEmail,
+      name: name,
+      role: role,
+      authRole: role.toLowerCase() === 'admin' ? 'admin' : 'user',
+      addedBy: 'Admin',
+      date: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+    };
+
+    setAuthorizedEmails(prev => [newAuth, ...prev]);
+    return { success: true, message: `Successfully authorized ${normEmail}!` };
+  };
+
+  // Admin Function: Remove email from Whitelist
+  const removeAuthorizedEmail = (email) => {
+    const normEmail = email.trim().toLowerCase();
+    setAuthorizedEmails(prev => prev.filter(a => a.email.toLowerCase() !== normEmail));
+  };
+
   const registerUser = (userData) => {
+    const normEmail = userData.email.trim().toLowerCase();
     const newUserRecord = {
-      email: userData.email,
+      email: normEmail,
       password: userData.password,
       name: userData.name,
       role: userData.role || 'User',
@@ -228,12 +317,20 @@ export const SkillXProvider = ({ children }) => {
     };
 
     setRegisteredUsers(prev => [...prev, newUserRecord]);
+    
+    // Auto-add to authorized emails list
+    if (!authorizedEmails.some(a => a.email.toLowerCase() === normEmail)) {
+      setAuthorizedEmails(prev => [
+        ...prev,
+        { email: normEmail, name: userData.name, role: userData.role, authRole: userData.authRole, addedBy: 'Registration', date: 'Today' }
+      ]);
+    }
 
     const loggedUser = {
       ...initialCurrentUser,
       id: `user-${Date.now()}`,
       name: userData.name,
-      email: userData.email,
+      email: normEmail,
       role: userData.authRole === 'admin' ? 'Campus Administrator' : 'Skill Exchange Student',
       institution: userData.institution || 'College of Engineering',
       trustScore: userData.authRole === 'admin' ? 99 : 85,
@@ -477,6 +574,10 @@ export const SkillXProvider = ({ children }) => {
         setIsCameraModalOpen,
         openCameraModal,
         updateAvatar,
+        authorizedEmails,
+        addAuthorizedEmail,
+        removeAuthorizedEmail,
+        loginWithGoogle,
         authRole,
         setAuthRole,
         loginUser,
